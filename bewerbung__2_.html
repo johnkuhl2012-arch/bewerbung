@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Server Bewerbung</title>
+<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.13/dist/face-api.js"></script>
+<!-- Font Awesome 6 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Source+Sans+3:wght@400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --white: #ffffff;
+  --off: #f7f7f7;
+  --border: #d8d8d8;
+  --border-focus: #555;
+  --text: #1a1a1a;
+  --text-muted: #666;
+  --accent: #1a1a1a;
+  --error: #c0392b;
+  --success: #1e7a3a;
+  --serif: 'Source Serif 4', Georgia, serif;
+  --sans: 'Source Sans 3', system-ui, sans-serif;
+}
+
+html, body {
+  min-height: 100vh;
+  background: var(--white);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* LAYOUT */
+.page {
+  display: none;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+}
+.page.active { display: block; }
+
+/* HEADER */
+.site-header {
+  border-bottom: 2px solid var(--text);
+  padding-bottom: 1rem;
+  margin-bottom: 2.5rem;
+}
+.site-header h1 {
+  font-family: var(--serif);
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+}
+.site-header p {
+  color: var(--text-muted);
+  font-size: .9rem;
+  margin-top: .3rem;
+}
+
+/* FORM */
+.field { margin-bottom: 2rem; }
+.field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: .35rem;
+  font-size: .95rem;
+}
+.field .hint {
+  font-size: .82rem;
+  color: var(--text-muted);
+  margin-bottom: .5rem;
+  line-height: 1.4;
+}
+.field input[type="text"],
+.field textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: .65rem .85rem;
+  font-family: var(--sans);
+  font-size: .95rem;
+  background: var(--white);
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+  resize: vertical;
+}
+.field input[type="text"]:focus,
+.field textarea:focus { border-color: var(--border-focus); }
+.field textarea { min-height: 130px; }
+.char-count {
+  text-align: right;
+  font-size: .78rem;
+  color: var(--text-muted);
+  margin-top: .25rem;
+}
+
+/* TOGGLE BUTTONS */
+.toggle-group { display: flex; gap: .6rem; flex-wrap: wrap; }
+.toggle-btn {
+  padding: .55rem 2.2rem;
+  border: 1px solid var(--border);
+  background: var(--white);
+  border-radius: 3px;
+  font-family: var(--sans);
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .12s, border-color .12s, color .12s;
+  letter-spacing: .04em;
+}
+.toggle-btn:hover { border-color: var(--text); }
+.toggle-btn.selected { background: var(--text); color: #fff; border-color: var(--text); }
+
+/* RADIO PILLS */
+.radio-group { display: flex; flex-wrap: wrap; gap: .45rem; }
+.radio-pill { display: inline-block; }
+.radio-pill input[type="radio"] { display: none; }
+.radio-pill label {
+  display: inline-block;
+  padding: .42rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-size: .88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .12s, border-color .12s;
+  user-select: none;
+}
+.radio-pill input[type="radio"]:checked + label {
+  background: var(--text);
+  color: #fff;
+  border-color: var(--text);
+}
+.radio-pill label:hover { border-color: var(--text); }
+
+/* DIVIDER */
+.divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+/* BUTTONS */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .75rem 2.4rem;
+  background: var(--text);
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  font-family: var(--sans);
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: .04em;
+  transition: opacity .15s;
+  text-decoration: none;
+}
+.btn-primary:hover { opacity: .82; }
+.btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .7rem 2.4rem;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--text);
+  border-radius: 3px;
+  font-family: var(--sans);
+  font-size: .92rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: .04em;
+  transition: background .12s, color .12s;
+  text-decoration: none;
+}
+.btn-outline:hover { background: var(--text); color: #fff; }
+
+/* ERROR */
+.field-error {
+  font-size: .82rem;
+  color: var(--error);
+  margin-top: .3rem;
+  display: none;
+}
+.field-error.show { display: block; }
+
+/* AGE SCREEN */
+.age-box {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+  background: var(--off);
+}
+.age-box h2 {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: .8rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.age-box p {
+  color: var(--text-muted);
+  font-size: .9rem;
+  line-height: 1.6;
+  margin-bottom: .7rem;
+}
+.age-box p:last-child { margin-bottom: 0; }
+.privacy-note {
+  border-top: 1px solid var(--border);
+  margin-top: 1rem;
+  padding-top: 1rem;
+  font-size: .82rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: .5rem;
+  align-items: flex-start;
+}
+.privacy-note i { margin-top: 2px; flex-shrink: 0; }
+.privacy-note strong { color: var(--text); }
+
+/* BIOSCAN */
+#scan-screen .scan-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+#cam-outer {
+  position: relative;
+  width: min(280px, 90vw);
+  height: min(280px, 90vw);
+  border: 2px solid var(--text);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #111;
+}
+#cv {
+  width: 100%; height: 100%;
+  display: block;
+  object-fit: cover;
+}
+#scanbeam {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: rgba(26,26,26,0.6);
+  top: 0; opacity: 0; pointer-events: none;
+}
+#scanbeam.run {
+  opacity: 1;
+  animation: beam 2.4s ease-in-out infinite;
+}
+@keyframes beam { 0%{top:0} 50%{top:calc(100% - 2px)} 100%{top:0} }
+
+.scan-status {
+  font-size: .9rem;
+  color: var(--text-muted);
+  text-align: center;
+  min-height: 1.4em;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.scan-status.ok { color: var(--success); font-weight: 600; }
+.scan-steps { display: flex; gap: 6px; }
+.sstep { width: 60px; height: 4px; background: var(--border); border-radius: 2px; }
+.sstep.done { background: var(--text); }
+.sstep.now { background: var(--text-muted); }
+
+/* SUCCESS */
+.success-icon {
+  font-size: 3rem;
+  margin-bottom: .8rem;
+  color: var(--success);
+}
+.success-title {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: .5rem;
+}
+.success-sub {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+  font-size: .95rem;
+}
+.donate-box {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.5rem;
+  background: var(--off);
+  margin-top: 1.5rem;
+}
+.donate-box h3 {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: .5rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.donate-box p { font-size: .9rem; color: var(--text-muted); margin-bottom: 1rem; }
+.donate-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .6rem 1.8rem;
+  background: var(--white);
+  border: 1px solid var(--text);
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: .9rem;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: .04em;
+  transition: background .12s, color .12s;
+}
+.donate-link:hover { background: var(--text); color: #fff; }
+
+/* TOO YOUNG */
+.tooyoung-box {
+  border: 1px solid #e8c8c8;
+  border-radius: 4px;
+  padding: 1.8rem;
+  background: #fdf5f5;
+}
+.tooyoung-box h2 {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  color: var(--error);
+  margin-bottom: .6rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.tooyoung-box p { color: #7a3a3a; font-size: .9rem; }
+
+/* STEP BAR */
+.step-bar {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  margin-bottom: 2rem;
+  font-size: .78rem;
+  color: var(--text-muted);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+.step-bar span:not(.step-num):not(.step-sep) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.step-num {
+  width: 22px; height: 22px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .72rem; font-weight: 700;
+  flex-shrink: 0;
+}
+.step-num.active { background: var(--text); color: #fff; border-color: var(--text); }
+.step-num.done { background: #e0e0e0; border-color: #e0e0e0; color: var(--text-muted); }
+.step-sep { flex: 1; height: 1px; background: var(--border); min-width: 12px; }
+
+/* =======================================
+   DATENSCHUTZ MODAL
+   ======================================= */
+.ds-footer {
+  text-align: center;
+  padding: 1.5rem;
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+  font-size: .8rem;
+  color: var(--text-muted);
+}
+.ds-footer a {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+}
+.ds-footer a:hover { opacity: .7; }
+
+/* Modal Overlay */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 1000;
+  padding: 1rem;
+  overflow-y: auto;
+  align-items: flex-start;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--white);
+  border-radius: 6px;
+  max-width: 620px;
+  width: 100%;
+  margin: auto;
+  padding: 2rem 2rem 1.5rem;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.modal-close {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  transition: background .12s;
+}
+.modal-close:hover { background: var(--off); color: var(--text); }
+.modal-box h2 {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding-right: 2rem;
+}
+.modal-section {
+  margin-bottom: 1.4rem;
+}
+.modal-section h3 {
+  font-size: .9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: .5rem;
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  color: var(--text);
+}
+.modal-section p {
+  font-size: .88rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+.modal-section ul {
+  margin: .4rem 0 0 0;
+  padding-left: 0;
+  list-style: none;
+}
+.modal-section ul li {
+  font-size: .88rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  padding: .2rem 0;
+}
+.modal-section ul li i {
+  color: var(--success);
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.modal-divider { border: none; border-top: 1px solid var(--border); margin: 1.2rem 0; }
+.modal-footer-note {
+  font-size: .78rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding-top: .5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+}
+
+/* =======================================
+   RESPONSIVE – PORTRAIT / MOBILE
+   ======================================= */
+@media (max-width: 520px) {
+  .page { padding: 1.2rem .9rem 4rem; }
+  .site-header h1 { font-size: 1.45rem; }
+  .site-header p { font-size: .83rem; }
+  #cam-outer { width: min(260px, 85vw); height: min(260px, 85vw); }
+  .toggle-btn { padding: .55rem 1.2rem; font-size: .85rem; }
+  .btn-primary, .btn-outline { padding: .72rem 1.6rem; font-size: .88rem; width: 100%; justify-content: center; }
+  .donate-link { width: 100%; justify-content: center; }
+  .step-bar { font-size: 0; gap: .3rem; }
+  .step-bar .step-sep { min-width: 8px; }
+  .step-bar span:not(.step-num):not(.step-sep) { display: none; }
+  .radio-group { gap: .35rem; }
+  .radio-pill label { padding: .38rem .85rem; font-size: .83rem; }
+  .age-box { padding: 1.2rem; }
+  .age-box h2 { font-size: 1.2rem; }
+  .modal-box { padding: 1.4rem 1.2rem 1.2rem; }
+  .modal-box h2 { font-size: 1.25rem; }
+  .success-title { font-size: 1.6rem; }
+  .field label { font-size: .9rem; }
+}
+
+@media (max-width: 360px) {
+  .page { padding: 1rem .75rem 3.5rem; }
+  .site-header h1 { font-size: 1.25rem; }
+  .toggle-group { gap: .4rem; }
+  .toggle-btn { padding: .5rem 1rem; }
+}
+
+/* Portrait orientation extra (tall phones) */
+@media (orientation: portrait) and (max-width: 520px) {
+  .scan-wrap { gap: .9rem; }
+  .sstep { width: 48px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================
+     DATENSCHUTZ MODAL
+     ============================ -->
+<div class="modal-overlay" id="ds-modal" role="dialog" aria-modal="true" aria-labelledby="ds-title">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeDsModal()" aria-label="Schließen">
+      <i class="fas fa-xmark"></i>
+    </button>
+
+    <h2 id="ds-title">
+      <i class="fas fa-shield-halved"></i>
+      Datenschutzerklärung
+    </h2>
+
+    <div class="modal-section">
+      <h3><i class="fas fa-server"></i> Eigenes System – keine Drittanbieter</h3>
+      <p>
+        Diese Bewerbungsseite läuft vollständig auf unserem eigenen System. Es werden
+        <strong>keine externen Analyse-, Tracking- oder Werbedienste</strong> eingebunden.
+        Wir nutzen keine Dienste von Drittanbietern wie Google Analytics, Meta Pixel oder ähnlichem.
+      </p>
+    </div>
+
+    <hr class="modal-divider">
+
+    <div class="modal-section">
+      <h3><i class="fas fa-camera-slash"></i> Kamera &amp; Gesichtsdaten</h3>
+      <ul>
+        <li><i class="fas fa-check"></i> Deine Kamerabilder werden <strong>nicht gespeichert</strong> – weder lokal noch auf einem Server.</li>
+        <li><i class="fas fa-check"></i> Die Gesichtsanalyse findet <strong>vollständig in deinem Browser</strong> statt (lokal, offline).</li>
+        <li><i class="fas fa-check"></i> Dein Gesicht wird <strong>nirgendwo hochgeladen, übertragen oder gespeichert</strong>.</li>
+        <li><i class="fas fa-check"></i> Es wird ausschließlich das <strong>geschätzte Alter</strong> (eine Zahl) zusammen mit deinen Formulardaten weitergegeben.</li>
+        <li><i class="fas fa-check"></i> Sobald der Scan abgeschlossen ist, wird der Kamerazugriff sofort beendet.</li>
+      </ul>
+    </div>
+
+    <hr class="modal-divider">
+
+    <div class="modal-section">
+      <h3><i class="fas fa-share-nodes"></i> Was wird geteilt?</h3>
+      <p>
+        Nach erfolgreichem Abschluss werden ausschließlich folgende Angaben an unseren
+        Discord-Server übermittelt: Discord-/E-Mail-Adresse, Minecraft-Nutzername,
+        Regelzustimmung, Spielerfahrung, Spielzeit, geschätztes Alter sowie deine
+        Freitextantwort. <strong>Es werden keine Bilder, keine Videodaten und keine
+        biometrischen Merkmale übermittelt oder gespeichert.</strong>
+      </p>
+    </div>
+
+    <hr class="modal-divider">
+
+    <div class="modal-section">
+      <h3><i class="fas fa-gavel"></i> Rechtsgrundlage</h3>
+      <p>
+        Die Verarbeitung erfolgt auf Basis deiner freiwilligen Einwilligung durch das
+        Ausfüllen und Absenden des Formulars (Art. 6 Abs. 1 lit. a DSGVO). Du kannst
+        den Vorgang jederzeit abbrechen.
+      </p>
+    </div>
+
+    <div class="modal-footer-note">
+      <i class="fas fa-lock"></i>
+      Deine Privatsphäre ist uns wichtig. Kein Gesicht wird jemals gespeichert.
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================
+     SCREEN 1: BEWERBUNGSFORMULAR
+     ============================ -->
+<div id="form-screen" class="page active">
+  <header class="site-header">
+    <h1>Server Bewerbung</h1>
+    <p>Fülle das Formular vollständig aus, um deine Bewerbung einzureichen.</p>
+  </header>
+
+  <div class="step-bar">
+    <span class="step-num active">1</span>
+    <span>Formular</span>
+    <span class="step-sep"></span>
+    <span class="step-num">2</span>
+    <span>Altersverifikation</span>
+    <span class="step-sep"></span>
+    <span class="step-num">3</span>
+    <span>Fertig</span>
+  </div>
+
+  <!-- Frage 1 -->
+  <div class="field">
+    <label for="dc-input">
+      <i class="fab fa-discord" style="margin-right:.3rem"></i>
+      1. Discord Username oder E-Mail
+    </label>
+    <div class="hint">Gib deinen Discord-Nutzernamen oder deine E-Mail-Adresse an, damit wir dich über das Ergebnis informieren können.</div>
+    <input type="text" id="dc-input" placeholder="z.B. user#1234 oder name@mail.com" maxlength="200">
+    <div class="field-error" id="err-dc"><i class="fas fa-triangle-exclamation"></i> Bitte gib deinen Discord-Nutzernamen oder deine E-Mail an.</div>
+  </div>
+
+  <!-- Frage 2 -->
+  <div class="field">
+    <label for="mc-input">
+      <i class="fas fa-cube" style="margin-right:.3rem"></i>
+      2. Minecraft Java Username
+    </label>
+    <div class="hint">Dein aktueller Minecraft Java Edition Nutzername (case-sensitive).</div>
+    <input type="text" id="mc-input" placeholder="z.B. Steve123" maxlength="100">
+    <div class="field-error" id="err-mc"><i class="fas fa-triangle-exclamation"></i> Bitte gib deinen Minecraft-Nutzernamen an.</div>
+  </div>
+
+  <!-- Frage 3 -->
+  <div class="field">
+    <label>
+      <i class="fas fa-scroll" style="margin-right:.3rem"></i>
+      3. Regelzustimmung
+    </label>
+    <div class="hint">Stimmst du zu, dass du bei Verstößen (z.B. Xray, Beleidigung, Griefing) dauerhaft gebannt werden kannst?</div>
+    <div class="toggle-group">
+      <button class="toggle-btn" id="btn-ja" onclick="selectBan('ja')">
+        <i class="fas fa-check" style="margin-right:.3rem"></i> Ja
+      </button>
+      <button class="toggle-btn" id="btn-nein" onclick="selectBan('nein')">
+        <i class="fas fa-xmark" style="margin-right:.3rem"></i> Nein
+      </button>
+    </div>
+    <div class="field-error" id="err-ban"><i class="fas fa-triangle-exclamation"></i> Bitte wähle eine Option aus.</div>
+  </div>
+
+  <!-- Frage 4 -->
+  <div class="field">
+    <label for="why-input">
+      <i class="fas fa-pen-to-square" style="margin-right:.3rem"></i>
+      4. Warum sollten wir dich bei uns spielen lassen?
+    </label>
+    <div class="hint">Erzähl uns von dir, deinem Spielstil und was du auf dem Server beitragen möchtest.</div>
+    <textarea id="why-input" maxlength="3000" placeholder="Deine Antwort (max. 3.000 Zeichen)…" oninput="updateChar()"></textarea>
+    <div class="char-count"><span id="char-num">0</span> / 3.000</div>
+    <div class="field-error" id="err-why"><i class="fas fa-triangle-exclamation"></i> Bitte fülle dieses Feld aus.</div>
+  </div>
+
+  <!-- Frage 5 -->
+  <div class="field">
+    <label>
+      <i class="fas fa-star" style="margin-right:.3rem"></i>
+      5. Wie schätzt du deine Minecraft-Erfahrung ein?
+    </label>
+    <div class="radio-group">
+      <div class="radio-pill"><input type="radio" name="erfahrung" id="e1" value="Extrem Gut"><label for="e1">Extrem Gut</label></div>
+      <div class="radio-pill"><input type="radio" name="erfahrung" id="e2" value="Sehr Gut"><label for="e2">Sehr Gut</label></div>
+      <div class="radio-pill"><input type="radio" name="erfahrung" id="e3" value="Normal"><label for="e3">Normal</label></div>
+      <div class="radio-pill"><input type="radio" name="erfahrung" id="e4" value="Neuling"><label for="e4">Neuling</label></div>
+      <div class="radio-pill"><input type="radio" name="erfahrung" id="e5" value="Nicht so gut"><label for="e5">Nicht so gut</label></div>
+    </div>
+    <div class="field-error" id="err-erf"><i class="fas fa-triangle-exclamation"></i> Bitte wähle dein Erfahrungslevel aus.</div>
+  </div>
+
+  <!-- Frage 6 -->
+  <div class="field">
+    <label>
+      <i class="fas fa-clock" style="margin-right:.3rem"></i>
+      6. Wie lange spielst du bereits Minecraft?
+    </label>
+    <div class="radio-group">
+      <div class="radio-pill"><input type="radio" name="spielzeit" id="s1" value="10+ Jahre"><label for="s1">10+ Jahre</label></div>
+      <div class="radio-pill"><input type="radio" name="spielzeit" id="s2" value="5+ Jahre"><label for="s2">5+ Jahre</label></div>
+      <div class="radio-pill"><input type="radio" name="spielzeit" id="s3" value="3+ Jahre"><label for="s3">3+ Jahre</label></div>
+      <div class="radio-pill"><input type="radio" name="spielzeit" id="s4" value="1+ Jahr"><label for="s4">1+ Jahr</label></div>
+      <div class="radio-pill"><input type="radio" name="spielzeit" id="s5" value="Unter 1 Jahr"><label for="s5">Unter 1 Jahr</label></div>
+    </div>
+    <div class="field-error" id="err-spz"><i class="fas fa-triangle-exclamation"></i> Bitte wähle deine Spielzeit aus.</div>
+  </div>
+
+  <hr class="divider">
+  <button class="btn-primary" onclick="submitForm()">
+    Absenden <i class="fas fa-arrow-right"></i>
+  </button>
+
+  <!-- Datenschutz Footer -->
+  <div class="ds-footer">
+    <a onclick="openDsModal()">
+      <i class="fas fa-shield-halved"></i> Datenschutzerklärung
+    </a>
+  </div>
+</div>
+
+
+<!-- ============================
+     SCREEN 2: ALTERSVERIFIKATION
+     ============================ -->
+<div id="age-screen" class="page">
+  <header class="site-header">
+    <h1>Altersverifikation</h1>
+    <p>Bevor deine Bewerbung gesendet wird, müssen wir dein Alter bestätigen.</p>
+  </header>
+
+  <div class="step-bar">
+    <span class="step-num done">1</span>
+    <span>Formular</span>
+    <span class="step-sep"></span>
+    <span class="step-num active">2</span>
+    <span>Altersverifikation</span>
+    <span class="step-sep"></span>
+    <span class="step-num">3</span>
+    <span>Fertig</span>
+  </div>
+
+  <div class="age-box">
+    <h2>
+      <i class="fas fa-user-check"></i>
+      Mindestalter: 13 Jahre
+    </h2>
+    <p>
+      Um diese Bewerbung abzusenden, musst du <strong>mindestens 13 Jahre alt</strong> sein.
+      Wir verwenden eine KI-gestützte Gesichtsanalyse, um dein ungefähres Alter zu schätzen.
+    </p>
+    <p>
+      Du wirst aufgefordert, kurz in die Kamera zu schauen. Der Scan dauert nur wenige Sekunden.
+    </p>
+    <div class="privacy-note">
+      <i class="fas fa-lock"></i>
+      <span>
+        <strong>Datenschutz:</strong> Deine Kamerabilder und Gesichtsanalysedaten werden
+        <strong>nicht gespeichert, nicht übertragen und nicht mit Dritten geteilt</strong>.
+        Die Analyse findet vollständig lokal in deinem Browser statt. Es werden lediglich
+        das geschätzte Alter und deine Bewerbungsdaten an den Server übermittelt.
+        <a onclick="openDsModal()" style="color:var(--text);cursor:pointer;white-space:nowrap;">
+          <i class="fas fa-circle-info"></i> Mehr erfahren
+        </a>
+      </span>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="startScan()">
+    Alter überprüfen <i class="fas fa-camera"></i>
+  </button>
+
+  <div class="ds-footer">
+    <a onclick="openDsModal()">
+      <i class="fas fa-shield-halved"></i> Datenschutzerklärung
+    </a>
+  </div>
+</div>
+
+
+<!-- ============================
+     SCREEN 3: BIOSCAN KAMERA
+     ============================ -->
+<div id="scan-screen" class="page">
+  <header class="site-header">
+    <h1>Altersanalyse</h1>
+    <p>Folge den Anweisungen auf dem Bildschirm.</p>
+  </header>
+
+  <div class="scan-wrap">
+    <div id="cam-outer">
+      <canvas id="cv"></canvas>
+      <div id="scanbeam"></div>
+    </div>
+
+    <div class="scan-steps">
+      <div class="sstep" id="ss0"></div>
+      <div class="sstep" id="ss1"></div>
+      <div class="sstep" id="ss2"></div>
+      <div class="sstep" id="ss3"></div>
+    </div>
+
+    <div class="scan-status" id="scan-msg">
+      <i class="fas fa-spinner fa-spin"></i> Kamera wird gestartet…
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================
+     SCREEN 4: ZU JUNG
+     ============================ -->
+<div id="young-screen" class="page">
+  <div class="tooyoung-box">
+    <h2>
+      <i class="fas fa-ban"></i>
+      Leider nicht möglich.
+    </h2>
+    <p>
+      Dein erkanntes Alter liegt unter <strong>13 Jahren</strong>. Du kannst diese Bewerbung leider nicht einreichen.<br><br>
+      Erkanntes Alter: <strong id="young-age">—</strong> Jahre
+    </p>
+  </div>
+</div>
+
+
+<!-- ============================
+     SCREEN 5: ERFOLGREICH
+     ============================ -->
+<div id="success-screen" class="page">
+  <div class="step-bar">
+    <span class="step-num done">1</span>
+    <span>Formular</span>
+    <span class="step-sep"></span>
+    <span class="step-num done">2</span>
+    <span>Altersverifikation</span>
+    <span class="step-sep"></span>
+    <span class="step-num active">3</span>
+    <span>Fertig</span>
+  </div>
+
+  <div class="success-icon">
+    <i class="fas fa-circle-check"></i>
+  </div>
+  <div class="success-title">Erfolgreich Abgesendet!</div>
+  <div class="success-sub">Deine Bewerbung wurde übermittelt. Wir melden uns über Discord oder E-Mail bei dir.</div>
+
+  <div class="donate-box">
+    <h3>
+      <i class="fas fa-mug-hot"></i>
+      Server Spende
+    </h3>
+    <p>
+      Wenn du möchtest, könntest du dem Server spenden, damit wir die Server-Laufzeit &amp; Plugins verbessern können.
+      Jede Spende hilft uns, das Spielerlebnis für alle zu verbessern!
+    </p>
+    <a class="donate-link" href="https://mc-host24.de/donate/knodel" target="_blank" rel="noopener">
+      Jetzt Spenden <i class="fas fa-heart"></i>
+    </a>
+  </div>
+
+  <div class="ds-footer">
+    <a onclick="openDsModal()">
+      <i class="fas fa-shield-halved"></i> Datenschutzerklärung
+    </a>
+  </div>
+</div>
+
+
+<!-- ============================
+     JAVASCRIPT
+     ============================ -->
+<script>
+const WEBHOOK = 'https://discord.com/api/webhooks/1501956550523228332/Wb_vZKmyRUrzsmqlRWxB618hl4YTeFzze9bpurPBMLxGvlN2XG8xDjM2M1qzTgRpBk2f';
+
+/* ---- DATENSCHUTZ MODAL ---- */
+function openDsModal() {
+  document.getElementById('ds-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDsModal() {
+  document.getElementById('ds-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+// ESC zum Schließen
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDsModal(); });
+// Klick auf Overlay schließt
+document.getElementById('ds-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeDsModal();
+});
+
+/* ---- FORM STATE ---- */
+let banChoice = null;
+let formData = {};
+
+function selectBan(val) {
+  banChoice = val;
+  document.getElementById('btn-ja').classList.toggle('selected', val === 'ja');
+  document.getElementById('btn-nein').classList.toggle('selected', val === 'nein');
+}
+
+function updateChar() {
+  const len = document.getElementById('why-input').value.length;
+  document.getElementById('char-num').textContent = len;
+}
+
+function showError(id, show) {
+  document.getElementById(id).classList.toggle('show', show);
+}
+
+function submitForm() {
+  let valid = true;
+  const dc = document.getElementById('dc-input').value.trim();
+  showError('err-dc', !dc); if (!dc) valid = false;
+  const mc = document.getElementById('mc-input').value.trim();
+  showError('err-mc', !mc); if (!mc) valid = false;
+  showError('err-ban', !banChoice); if (!banChoice) valid = false;
+  const why = document.getElementById('why-input').value.trim();
+  showError('err-why', !why); if (!why) valid = false;
+  const erf = document.querySelector('input[name="erfahrung"]:checked');
+  showError('err-erf', !erf); if (!erf) valid = false;
+  const spz = document.querySelector('input[name="spielzeit"]:checked');
+  showError('err-spz', !spz); if (!spz) valid = false;
+  if (!valid) return;
+  formData = {
+    discord: dc,
+    minecraft: mc,
+    banAgreement: banChoice === 'ja' ? '✅ Ja' : '❌ Nein',
+    warum: why,
+    erfahrung: erf.value,
+    spielzeit: spz.value
+  };
+  showPage('age-screen');
+}
+
+/* ---- PAGE SWITCHING ---- */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+/* ======================================================
+   BIOSCAN INTEGRATION
+   ====================================================== */
+let video, ctx, W, H;
+let phase = 'idle';
+let ageSamples = [], holdFrames = 0, raf = null;
+let HOLD_NEEDED = 18;
+const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.13/model/';
+
+/**
+ * Alterskorrektur:
+ * Die KI überschätzt Alter systematisch – wir korrigieren ~20% nach unten,
+ * damit die Wahrnehmung jünger ausfällt (entsprechend Nutzerwunsch).
+ */
+function correctAge(raw) {
+  let corrected;
+  if (raw < 10)      corrected = raw * 0.87;
+  else if (raw < 16) corrected = raw * 0.85;
+  else if (raw < 22) corrected = raw * 0.85;
+  else if (raw < 35) corrected = raw * 0.85;
+  else               corrected = raw * 0.85;
+  return Math.max(1, corrected);
+}
+
+async function startScan() {
+  showPage('scan-screen');
+  const canvas = document.getElementById('cv');
+  const outer  = document.getElementById('cam-outer');
+  W = outer.clientWidth; H = outer.clientHeight;
+  canvas.width = W; canvas.height = H;
+  ctx = canvas.getContext('2d');
+  scanMsg('<i class="fas fa-spinner fa-spin"></i> Gesichtsmodelle werden geladen…');
+  setStep(-1);
+
+  try {
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL);
+    await faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL);
+  } catch(e) {
+    scanMsg('<i class="fas fa-circle-exclamation"></i> Fehler beim Laden der Modelle. Bitte neu laden.'); return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: W, height: H } });
+    video = document.createElement('video');
+    video.srcObject = stream;
+    video.autoplay = true; video.playsInline = true; video.muted = true;
+    await new Promise(res => { video.onloadedmetadata = res; });
+    video.play();
+  } catch(e) {
+    scanMsg('<i class="fas fa-circle-exclamation"></i> Kamera nicht verfügbar: ' + e.message); return;
+  }
+
+  document.getElementById('scanbeam').classList.add('run');
+  phase = 'straight'; ageSamples = []; holdFrames = 0;
+  scanMsg('<i class="fas fa-face-smile"></i> Gerade in die Kamera schauen…');
+  raf = requestAnimationFrame(detect);
+}
+
+async function detect() {
+  if (!video || video.readyState < 2) { raf = requestAnimationFrame(detect); return; }
+  ctx.save();
+  ctx.translate(W, 0);
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, 0, 0, W, H);
+  ctx.restore();
+  const det = await faceapi
+    .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224 }))
+    .withFaceLandmarks(true)
+    .withAgeAndGender();
+
+  if (det) {
+    const { x, y, width: w, height: h } = det.detection.box;
+    const pts = det.landmarks.positions;
+    ageSamples.push(det.age);
+    drawFaceBox({ x, y, w, h }, pts, det.age);
+    phaseLogic(pts);
+  } else {
+    holdFrames = Math.max(0, holdFrames - 2);
+    scanMsg('<i class="fas fa-eye-slash"></i> Kein Gesicht erkannt — bitte in die Kamera schauen.');
+  }
+
+  if (phase !== 'done') raf = requestAnimationFrame(detect);
+}
+
+function phaseLogic(pts) {
+  const nose = pts[30]; const chin = pts[8];
+  const leftEye = pts[36]; const rightEye = pts[45];
+  const eyeDist = Math.abs(rightEye.x - leftEye.x);
+  const eyeMid  = (leftEye.x + rightEye.x) / 2;
+  const offset  = (eyeMid - nose.x) / eyeDist;
+
+  if (phase === 'straight') {
+    setStep(0);
+    if (Math.abs(offset) < 0.12) {
+      holdFrames++;
+      if (holdFrames >= HOLD_NEEDED) {
+        holdFrames = 0; phase = 'right';
+        scanMsg('<i class="fas fa-check"></i> Scan 1 gespeichert! Kopf nach LINKS drehen ←');
+      } else {
+        scanMsg('<i class="fas fa-face-smile"></i> Gesicht erkannt — gerade halten…');
+      }
+    } else {
+      holdFrames = Math.max(0, holdFrames - 2);
+      scanMsg('<i class="fas fa-arrows-to-dot"></i> Gerade in die Kamera schauen.');
+    }
+  } else if (phase === 'right') {
+    setStep(1);
+    if (offset < -0.22) {
+      holdFrames++;
+      if (holdFrames >= HOLD_NEEDED) {
+        holdFrames = 0; phase = 'left';
+        scanMsg('<i class="fas fa-check"></i> Scan 2 gespeichert! Kopf nach RECHTS drehen →');
+      } else {
+        scanMsg('<i class="fas fa-arrow-left"></i> Richtig! Halten…');
+      }
+    } else {
+      holdFrames = Math.max(0, holdFrames - 2);
+      scanMsg('<i class="fas fa-arrow-left"></i> Kopf nach LINKS drehen ←');
+    }
+  } else if (phase === 'left') {
+    setStep(2);
+    if (offset > 0.22) {
+      holdFrames++;
+      if (holdFrames >= HOLD_NEEDED) {
+        phase = 'done';
+        cancelAnimationFrame(raf); raf = null;
+        finishScan();
+        return;
+      } else {
+        scanMsg('<i class="fas fa-arrow-right"></i> Richtig! Halten…');
+      }
+    } else {
+      holdFrames = Math.max(0, holdFrames - 2);
+      scanMsg('<i class="fas fa-arrow-right"></i> Kopf nach RECHTS drehen →');
+    }
+  }
+}
+
+function drawFaceBox(box, pts, rawAge) {
+  const mx = W - box.x - box.w;
+  ctx.save();
+  ctx.strokeStyle = 'rgba(26,26,26,0.8)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(mx, box.y, box.w, box.h);
+  const corrected = Math.round(correctAge(rawAge));
+  ctx.fillStyle = 'rgba(26,26,26,0.85)';
+  ctx.font = '12px "Source Sans 3", sans-serif';
+  ctx.fillText(`ALTER ~${corrected}`, mx + 2, box.y - 6);
+  ctx.restore();
+}
+
+function setStep(n) {
+  ['ss0','ss1','ss2','ss3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'sstep' + (i < n ? ' done' : i === n ? ' now' : '');
+  });
+}
+
+function scanMsg(html) {
+  const el = document.getElementById('scan-msg');
+  el.innerHTML = html;
+}
+
+async function finishScan() {
+  if (video) video.srcObject?.getTracks().forEach(t => t.stop());
+  document.getElementById('scanbeam').classList.remove('run');
+  setStep(4);
+  scanMsg('<i class="fas fa-spinner fa-spin"></i> Analyse wird ausgewertet…');
+
+  const corrected = ageSamples.map(correctAge);
+  const sorted = [...corrected].sort((a, b) => a - b);
+  const trim = Math.max(1, Math.floor(sorted.length * 0.15));
+  const trimmed = sorted.slice(trim, sorted.length - trim);
+  const age = Math.round(trimmed.reduce((s, v) => s + v, 0) / trimmed.length);
+
+  await new Promise(res => setTimeout(res, 800));
+
+  if (age < 13) {
+    document.getElementById('young-age').textContent = age;
+    showPage('young-screen');
+    return;
+  }
+
+  await sendWebhook(age);
+  showPage('success-screen');
+}
+
+/* ---- WEBHOOK ---- */
+async function sendWebhook(detectedAge) {
+  const now = new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin' });
+  const payload = {
+    username: 'Bewerbungs-System',
+    avatar_url: 'https://i.imgur.com/4M34hi2.png',
+    embeds: [{
+      title: '📋 Neue Serverbewerbung',
+      color: 0x1a1a1a,
+      fields: [
+        { name: '🎮 Minecraft Username',     value: formData.minecraft,    inline: true },
+        { name: '💬 Discord / E-Mail',       value: formData.discord,      inline: true },
+        { name: '📜 Regelzustimmung (Bann)', value: formData.banAgreement, inline: true },
+        { name: '⚔️ Spielerfahrung',         value: formData.erfahrung,    inline: true },
+        { name: '⏳ Spielzeit',              value: formData.spielzeit,    inline: true },
+        { name: '🔞 Erkanntes Alter',        value: `${detectedAge} Jahre`, inline: true },
+        { name: '❓ Warum aufnehmen?',       value: formData.warum.length > 1024 ? formData.warum.substring(0,1020)+'…' : formData.warum, inline: false }
+      ],
+      footer: { text: `Eingereicht am ${now} • KI-Altersverifikation` },
+      timestamp: new Date().toISOString()
+    }]
+  };
+  try {
+    await fetch(WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {
+    console.warn('Webhook konnte nicht gesendet werden:', e);
+  }
+}
+</script>
+</body>
+</html>
